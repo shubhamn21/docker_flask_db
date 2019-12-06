@@ -1,0 +1,46 @@
+version: '3.3'
+
+services:
+  api_service:
+    container_name: api_service
+
+    image: shubham:api-image-final
+
+    volumes:
+      - '/docker-compose-v2'
+
+    ports:
+    # mapping the container port 5000 to the host port locally on my computer 5001
+      - 5001:5000
+
+    environment:
+    # environment variables for my API application
+      - APP_SETTING=development
+      - DATABASE_URL=postgres://postgres:postgres@amity-db:5432/docker
+      - DEV_SECRET_KEY=thisisit
+      - JWT_SECRET_KEY=thisisthekey
+
+    depends_on:
+    # this makes this service to wait for the amity_db service to come up first before it runs
+      - amity_db_service
+
+    links:
+    # this links this service to the amity_db service
+      - amity_db_service
+
+    
+  # apostgresql database server service
+  amity_db_service:
+
+    # container name.
+    container_name: amity-db
+
+    image: shubham:database-final-image
+ 
+    ports:
+      - 5432:5432
+    
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - JWT_SECRET_KEY=thisisthekey
